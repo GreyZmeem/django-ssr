@@ -24,8 +24,6 @@ install:
 
 script:
     - tox
-    - coverage run --source django_ssr -m py.test
-    - coverage report -m
 
 after_success:
     - pip install codecov
