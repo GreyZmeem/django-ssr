@@ -1,0 +1,35 @@
+language: python
+cache: pip
+
+python:
+    - "3.5"
+    - "3.6"
+    - "3.7"
+
+sudo: false
+
+env:
+    - DJANGO=1.11
+    - DJANGO=2.0
+    - DJANGO=2.1
+
+matrix:
+    fast_finish: true
+    include:
+        - python: 2.7
+          env: TOXENV=flake8
+
+install:
+    - pip install coverage tox tox-travis
+
+script:
+    - tox
+    - coverage run --source django_ssr -m py.test
+    - coverage report -m
+
+after_success:
+    - pip install codecov
+    - codecov
+
+notifications:
+email: false
