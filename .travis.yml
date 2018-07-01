@@ -29,7 +29,7 @@ script:
 
 after_success:
     - pip install codecov
-    - codecov
+    - codecov -e TOXENV,DJANGO
 
 notifications:
 email: false
