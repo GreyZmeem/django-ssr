@@ -51,7 +51,7 @@ class PrerenderIOTestCase(TestCase):
         r = self.backend(token='token', session=MagicMock(return_value=session)).update('http://test/example')
 
         h = {'Content-Type': 'application/json'}
-        d = {'url': 'http://test/example'}
+        d = {'prerenderToken': 'token', 'url': 'http://test/example'}
         session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, d, headers=h)
         self.assertTrue(r)
 
@@ -65,6 +65,6 @@ class PrerenderIOTestCase(TestCase):
         r = self.backend(token='token', session=MagicMock(return_value=session)).update('http://test/example')
 
         h = {'Content-Type': 'application/json'}
-        d = {'url': 'http://test/example'}
+        d = {'prerenderToken': 'token', 'url': 'http://test/example'}
         session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, d, headers=h)
         self.assertFalse(r)

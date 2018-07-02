@@ -204,3 +204,8 @@ class PrerenderIO(PrerenderIOHosted):
         if not self.token:
             raise ValueError('prerender.io token is missing or empty')
         self.session.headers[self.PRERENDER_TOKEN_HEADER_NAME] = self.token
+
+    def update(self, url: str) -> bool:
+        headers = {'Content-Type': 'application/json'}
+        data = {'prerenderToken': self.token, 'url': url}
+        return self.session.post(self.update_url, data, headers=headers).status_code < 500
