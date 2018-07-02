@@ -30,13 +30,12 @@ def test_is_extension_ignored():
 
 
 def test_user_agent_match():
-    items = {re.compile('google', re.I), re.compile('bing', re.I), re.compile('yandex', re.I)}
-    assert helpers.is_user_agent_match('Google-Bot', items)
-    assert helpers.is_user_agent_match('Bing-Bot', items)
-    assert helpers.is_user_agent_match('Yandex-Bot', items)
-    assert not helpers.is_user_agent_match('Ads-Google', items)
-    assert not helpers.is_user_agent_match('The-Bing-Bot', items)
-    assert not helpers.is_user_agent_match(' Yandex', items)
+    items = {re.compile('.*googlebot', re.I), re.compile('.*bingbot', re.I), re.compile('.*yandex', re.I)}
+    assert helpers.is_user_agent_match('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', items)  # noqa
+    assert helpers.is_user_agent_match('Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)', items)  # noqa
+    assert helpers.is_user_agent_match('User-Agent Mozilla/5.0 (compatible; Yandex...)', items)
+    assert not helpers.is_user_agent_match('Google-Bot', items)
+    assert not helpers.is_user_agent_match('Bing-Bot', items)
 
 
 def test_must_render():

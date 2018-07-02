@@ -54,9 +54,9 @@ DEFAULTS = {
     },
     'USER_AGENTS': {
         # Google crawlers: https://support.google.com/webmasters/answer/1061943?hl=en
-        re.compile(r'Googlebot', re.I),
-        re.compile(r'Mediapartners-Google', re.I),
-        re.compile(r'AdsBot-Google', re.I),
+        re.compile(r'.*Googlebot', re.I),
+        re.compile(r'.*Mediapartners-Google', re.I),
+        re.compile(r'.*AdsBot-Google', re.I),
     },
 
     # Self-hosted https://prerender.io
