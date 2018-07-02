@@ -53,7 +53,8 @@ class PrerenderIOHostedTestCase(TestCase):
         r = b.update('http://test/example')
 
         h = {'Content-Type': 'application/json'}
-        session.post.assert_called_once_with('http://testserver/update/', {'url': 'http://test/example'}, headers=h)
+        d = {'url': 'http://test/example'}
+        session.post.assert_called_once_with('http://testserver/update/', json=d, headers=h)
         self.assertTrue(r)
 
     def test_update_is_false(self):
@@ -68,5 +69,6 @@ class PrerenderIOHostedTestCase(TestCase):
         r = b.update('http://test/example')
 
         h = {'Content-Type': 'application/json'}
-        session.post.assert_called_once_with('http://testserver/update/', {'url': 'http://test/example'}, headers=h)
+        d = {'url': 'http://test/example'}
+        session.post.assert_called_once_with('http://testserver/update/', json=d, headers=h)
         self.assertFalse(r)

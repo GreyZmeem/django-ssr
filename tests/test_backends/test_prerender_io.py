@@ -52,7 +52,7 @@ class PrerenderIOTestCase(TestCase):
 
         h = {'Content-Type': 'application/json'}
         d = {'prerenderToken': 'token', 'url': 'http://test/example'}
-        session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, d, headers=h)
+        session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, json=d, headers=h)
         self.assertTrue(r)
 
     def test_update_is_false(self):
@@ -66,5 +66,5 @@ class PrerenderIOTestCase(TestCase):
 
         h = {'Content-Type': 'application/json'}
         d = {'prerenderToken': 'token', 'url': 'http://test/example'}
-        session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, d, headers=h)
+        session.post.assert_called_once_with(self.backend.PRERENDER_IO_UPDATE_URL, json=d, headers=h)
         self.assertFalse(r)

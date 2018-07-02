@@ -176,7 +176,7 @@ class PrerenderIOHosted(RequestsDjangoResponseBuilderMixin, BackendBase):
     def update(self, url: str) -> bool:
         headers = {'Content-Type': 'application/json'}
         data = {'url': url}
-        return self.session.post(self.update_url, data, headers=headers).status_code < 500
+        return self.session.post(self.update_url, json=data, headers=headers).status_code < 500
 
 
 class PrerenderIO(PrerenderIOHosted):
@@ -208,4 +208,4 @@ class PrerenderIO(PrerenderIOHosted):
     def update(self, url: str) -> bool:
         headers = {'Content-Type': 'application/json'}
         data = {'prerenderToken': self.token, 'url': url}
-        return self.session.post(self.update_url, data, headers=headers).status_code < 500
+        return self.session.post(self.update_url, json=data, headers=headers).status_code < 500
