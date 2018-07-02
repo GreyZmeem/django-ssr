@@ -1,3 +1,4 @@
+import datetime
 import re
 from typing import Container, Iterable, Pattern, Union
 
@@ -16,6 +17,10 @@ DEFAULTS = {
     'ENABLED': not settings.DEBUG,
     'BACKEND': 'django_ssr.backends.PrerenderIO',
     'STRIP_QUERY_PARAMS': False,
+
+    'CACHE_ALIAS': 'default',
+    'CACHE_PREFIX': 'django-ssr',
+    'CACHE_TIMEOUT': int(datetime.timedelta(days=14).total_seconds()),
 
     'IGNORE_EXTENSIONS': {
         '.js',
@@ -66,6 +71,11 @@ DEFAULTS = {
 ENABLED = s('ENABLED')  # type: bool
 BACKEND = s('BACKEND')  # type: str
 STRIP_QUERY_PARAMS = s('STRIP_QUERY_PARAMS')  # type: bool
+
+CACHE_ALIAS = s('CACHE_ALIAS')  # type: str
+CACHE_PREFIX = s('CACHE_PREFIX')  # type: str
+CACHE_TIMEOUT = s('CACHE_TIMEOUT')  # type: int
+
 IGNORE_EXTENSIONS = s('IGNORE_EXTENSIONS')  # type: Iterable
 IGNORE_PATH = s('IGNORE_PATH')  # type: Iterable[Pattern]
 IGNORE_URLS = s('IGNORE_URLS')  # type: Iterable[Pattern]

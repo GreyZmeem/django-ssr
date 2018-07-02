@@ -1,8 +1,13 @@
-from typing import Callable
+import hashlib
+import logging
+import pickle
+from typing import Callable, Optional
 from urllib.parse import urlparse, ParseResult
 
 import requests
+from django.core.cache import caches, BaseCache
 from django.http import HttpRequest, HttpResponse
+from django.utils.encoding import force_bytes
 
 from django_ssr import settings
 
@@ -12,6 +17,7 @@ __all__ = [
     'PrerenderIO',
 ]
 
+logger = logging.getLogger(__name__)
 SessionCreator = Callable[..., requests.Session]
 
 
@@ -58,6 +64,83 @@ class RequestsDjangoResponseBuilderMixin:
         r['content-length'] = len(response.content)
         r.status_code = response.status_code
         return r
+
+
+class CachingBackendMixin:
+    """
+    Store rendered pages in django's cache
+    """
+
+    def __init__(
+        self,
+        *,
+        cache_alias: str = None,
+        cache_prefix: str = None,
+        cache_timeout: int = None,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.cache = caches[cache_alias if cache_alias is not None else settings.CACHE_ALIAS]  # type: BaseCache
+        self.cache_prefix = cache_prefix if cache_prefix is not None else settings.CACHE_PREFIX
+        self.cache_timeout = cache_timeout if cache_timeout is not None else settings.CACHE_TIMEOUT
+
+    def render(self, url: str) -> HttpResponse:
+        """
+        Return an HttpResponse, passing through all headers and the status code.
+        """
+        resp = self.cache_retrieve(url)
+        if resp is None:
+            resp = super().render(url)
+            self.cache_set(url, resp)
+        return resp
+
+    def update(self, url: str) -> bool:
+        """
+        Force an update of the cache for a particular URL.
+        """
+        is_ok = super().update(url)
+        if is_ok:
+            self.cache_clear(url)
+        return is_ok
+
+    def cache_build_key(self, url: str) -> str:
+        """
+        Return key under which response will be saved or retrieved.
+        """
+        url_hash = hashlib.md5(force_bytes(url)).hexdigest()
+        return '%s:%s' % (self.cache_prefix, url_hash)
+
+    def cache_set(self, url: str, resp: HttpResponse):
+        """
+        Save http response in cache.
+        """
+        self.cache.set(self.cache_build_key(url), pickle.dumps(resp), timeout=self.cache_timeout)
+
+    def cache_retrieve(self, url: str) -> Optional[HttpResponse]:
+        """
+        Retrieve http response from cache.
+        """
+        resp = self.cache.get(self.cache_build_key(url))
+        if resp is None:
+            return None
+
+        try:
+            resp = pickle.loads(resp)
+        except pickle.UnpicklingError as e:
+            logger.error('Cannot unpickle rendered http response from cache: %s' % e, exc_info=True)
+            return None
+
+        if not isinstance(resp, HttpResponse):
+            logger.error('Cached http response is not an instance of HttpResponse: %s' % type(resp))
+            return None
+
+        return resp
+
+    def cache_clear(self, url: str):
+        """
+        Clear cached http response
+        """
+        self.cache.delete(self.cache_build_key(url))
 
 
 class PrerenderIOHosted(RequestsDjangoResponseBuilderMixin, BackendBase):
