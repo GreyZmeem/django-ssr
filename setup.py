@@ -23,7 +23,6 @@ setuptools.setup(
         'Framework :: Django',
         'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.0',
-        'Framework :: Django :: 2.1',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
         'License :: OSI Approved :: MIT License',
